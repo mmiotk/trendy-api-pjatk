@@ -1,0 +1,27 @@
+{
+  "name": "kino-api-demo",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kino: repertuar dnia — reference project for lecture 01 live-coding demo",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node --watch src/server.ts",
+    "start": "node src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "client": "node src/client.ts",
+    "reserve-demo": "node src/reserve-demo.ts",
+    "pagination-demo": "node src/pagination-demo.ts",
+    "report-demo": "node src/report-demo.ts"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^24.13.6",
+    "typescript": "^7.0.2"
+  }
+}
