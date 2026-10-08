@@ -1,0 +1,29 @@
+// The SAME operation as contracts/openapi/weather.v1.yaml
+// (GET /stations/{stationId}/readings/latest) written as a Protocol
+// Buffers service definition. Validated with `buf lint` and, across
+// versions, `buf breaking` (segment 4 and segment 7) — no gRPC server here,
+// that is lecture 06-07's topic.
+syntax = "proto3";
+
+package weather.v1;
+
+message Reading {
+  string id = 1;
+  string station_id = 2;
+  string observed_at = 3;
+  string quality_flag = 5;
+  double temperature_value = 6; // breaking: field 4 removed, replaced below
+  string unit = 7;
+}
+
+message GetLatestReadingRequest {
+  string station_id = 1;
+}
+
+message GetLatestReadingResponse {
+  Reading reading = 1;
+}
+
+service WeatherService {
+  rpc GetLatestReading(GetLatestReadingRequest) returns (GetLatestReadingResponse);
+}

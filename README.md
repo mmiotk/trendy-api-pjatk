@@ -5,5 +5,6 @@ Kod demo pisany na wykładach. Repozytorium jest aktualizowane po każdym wykła
 | Wykład | Katalog |
 |---|---|
 | Wykład 01 — Od REST do wielu stylów API | [`lecture01/`](lecture01/) |
+| Wykład 02 — Kontrakt jako źródło prawdy | [`lecture02/`](lecture02/) |
 
 Projekty demo uruchamia się według `README.md` w ich katalogu; zależności (`node_modules` itp.) instaluje się lokalnie, nie są w repozytorium.

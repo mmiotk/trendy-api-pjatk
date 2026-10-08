@@ -1,0 +1,170 @@
+openapi: 3.1.0
+servers:
+  - url: /v1
+info:
+  title: Weather Stations API
+  version: 1.1.0
+  description: |
+    v1.1 — segment 5, step "compatible change": adds the OPTIONAL
+    `qualityFlag` field to Reading. Nothing existing changes shape or
+    becomes required, so this is a MINOR bump (Semantic Versioning).
+paths:
+  /stations:
+    get:
+      operationId: listStations
+      summary: List all weather stations
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Station"
+              example:
+                data:
+                  - id: "st-01"
+                    name: "Gdansk-Letnica"
+                    lat: 54.386
+                    lon: 18.660
+                    elevationMeters: 2
+                  - id: "st-02"
+                    name: "Zakopane-Kasprowy"
+                    lat: 49.232
+                    lon: 19.982
+                    elevationMeters: 1987
+  /stations/{stationId}:
+    get:
+      operationId: getStation
+      summary: Get a single weather station
+      parameters:
+        - $ref: "#/components/parameters/StationId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Station"
+              example:
+                id: "st-01"
+                name: "Gdansk-Letnica"
+                lat: 54.386
+                lon: 18.660
+                elevationMeters: 2
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /stations/{stationId}/readings/latest:
+    get:
+      operationId: getLatestReading
+      summary: Get the most recent reading for a station
+      description: |
+        The ONE operation kept in sync across all four contract languages in
+        segment 4: OpenAPI (here), GraphQL SDL, Protocol Buffers, AsyncAPI.
+      parameters:
+        - $ref: "#/components/parameters/StationId"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reading"
+              example:
+                id: "rd-1001"
+                stationId: "st-01"
+                observedAt: "2026-09-25T09:00:00Z"
+                temperatureCelsius: 14.2
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /stations/{stationId}/readings:
+    post:
+      operationId: recordReading
+      summary: Record a new reading for a station
+      parameters:
+        - $ref: "#/components/parameters/StationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewReading"
+            example:
+              temperatureCelsius: 15.1
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reading"
+              example:
+                id: "rd-1002"
+                stationId: "st-01"
+                observedAt: "2026-09-25T09:15:00Z"
+                temperatureCelsius: 15.1
+        "404":
+          $ref: "#/components/responses/NotFound"
+components:
+  parameters:
+    StationId:
+      name: stationId
+      in: path
+      required: true
+      schema:
+        type: string
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            required: [error]
+            properties:
+              error:
+                type: string
+          example:
+            error: "station not found"
+  schemas:
+    Station:
+      type: object
+      required: [id, name, lat, lon, elevationMeters]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        lat:
+          type: number
+        lon:
+          type: number
+        elevationMeters:
+          type: number
+    Reading:
+      type: object
+      required: [id, stationId, observedAt, temperatureCelsius]
+      properties:
+        id:
+          type: string
+        stationId:
+          type: string
+        observedAt:
+          type: string
+          format: date-time
+        temperatureCelsius:
+          type: number
+        qualityFlag:
+          type: string
+          enum: [ok, suspect, missing]
+    NewReading:
+      type: object
+      required: [temperatureCelsius]
+      properties:
+        temperatureCelsius:
+          type: number

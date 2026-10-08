@@ -1,0 +1,53 @@
+{
+  "name": "weather-contracts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Weather Stations API — reference project for lecture 02 live-coding demo",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node --watch src/server.ts",
+    "start": "node src/server.ts",
+    "client:v1": "node src/client-v1.ts",
+    "client:v2": "node src/client-v2.ts",
+    "typecheck": "tsc --noEmit",
+    "generate": "npx --yes openapi-typescript@7.13.0 contracts/openapi/weather.v1.yaml -o src/generated/weather.v1.d.ts",
+    "mock": "prism mock contracts/openapi/weather.v1.yaml -p 4010",
+    "mock:client": "node src/mock-client.ts",
+    "conformance": "node src/validate-conformance.ts",
+    "evolution": "node src/evolution-demo.ts",
+    "formats": "node src/formats-demo.ts",
+    "contracts:check": "node scripts/contracts-check.mjs"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "avsc": "^5.7.9",
+    "express": "^5.2.1",
+    "express-openapi-validator": "^5.6.2",
+    "graphql": "^17.0.2",
+    "js-yaml": "^5.4.2",
+    "protobufjs": "^8.8.0"
+  },
+  "devDependencies": {
+    "@asyncapi/cli": "^6.2.0",
+    "@bufbuild/buf": "^1.73.0",
+    "@oasdiff-js/oasdiff-js": "^1.0.0",
+    "@stoplight/prism-cli": "^5.16.0",
+    "@types/express": "^5.0.6",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^24.13.6",
+    "typescript": "^7.0.2"
+  },
+  "allowScripts": {
+    "@asyncapi/cli@6.2.0": true,
+    "@bufbuild/buf@1.73.0": true,
+    "@hyperjump/json-pointer@0.9.8": true,
+    "@hyperjump/json-schema@0.23.5": true,
+    "@hyperjump/json-schema-core@0.28.5": true,
+    "@hyperjump/pact@0.2.5": true,
+    "@scarf/scarf@1.4.0": true,
+    "yarn@1.22.22": true
+  }
+}
