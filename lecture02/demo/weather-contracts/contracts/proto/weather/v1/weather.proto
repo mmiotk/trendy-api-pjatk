@@ -1,8 +1,3 @@
-// The SAME operation as contracts/openapi/weather.v1.yaml
-// (GET /stations/{stationId}/readings/latest) written as a Protocol
-// Buffers service definition. Validated with `buf lint` and, across
-// versions, `buf breaking` (segment 4 and segment 7) — no gRPC server here,
-// that is lecture 06-07's topic.
 syntax = "proto3";
 
 package weather.v1;
@@ -12,6 +7,7 @@ message Reading {
   string station_id = 2;
   string observed_at = 3;
   double temperature_celsius = 4;
+  string quality_flag = 5;
 }
 
 message GetLatestReadingRequest {

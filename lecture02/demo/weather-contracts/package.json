@@ -3,23 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Weather Stations API — reference project for lecture 02 live-coding demo",
-  "engines": {
-    "node": ">=24"
-  },
   "scripts": {
     "dev": "node --watch src/server.ts",
     "start": "node src/server.ts",
-    "client:v1": "node src/client-v1.ts",
-    "client:v2": "node src/client-v2.ts",
-    "typecheck": "tsc --noEmit",
-    "generate": "npx --yes openapi-typescript@7.13.0 contracts/openapi/weather.v1.yaml -o src/generated/weather.v1.d.ts",
     "mock": "prism mock contracts/openapi/weather.v1.yaml -p 4010",
-    "mock:client": "node src/mock-client.ts",
-    "conformance": "node src/validate-conformance.ts",
-    "evolution": "node src/evolution-demo.ts",
-    "formats": "node src/formats-demo.ts",
-    "contracts:check": "node scripts/contracts-check.mjs"
+    "generate": "npx --yes openapi-typescript@7.13.0 contracts/openapi/weather.v1.yaml -o src/generated/weather.v1.d.ts",
+    "typecheck": "tsc --noEmit",
+    "client": "node src/client.ts",
+    "conformance": "node src/conformance.ts",
+    "sdl": "node src/sdl.ts",
+    "breaking": "oasdiff breaking --fail-on ERR contracts/openapi/weather.v1.yaml contracts/openapi/weather.v2.yaml && buf breaking contracts/proto-evolution/v2 --against contracts/proto-evolution/v1",
+    "formats": "node src/formats.ts"
   },
   "dependencies": {
     "ajv": "^8.20.0",
@@ -36,7 +30,6 @@
     "@oasdiff-js/oasdiff-js": "^1.0.0",
     "@stoplight/prism-cli": "^5.16.0",
     "@types/express": "^5.0.6",
-    "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.13.6",
     "typescript": "^7.0.2"
   },

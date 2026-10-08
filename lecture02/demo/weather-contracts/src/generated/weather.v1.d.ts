@@ -4,40 +4,6 @@
  */
 
 export interface paths {
-    "/stations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** List all weather stations */
-        get: operations["listStations"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/stations/{stationId}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get a single weather station */
-        get: operations["getStation"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/stations/{stationId}/readings/latest": {
         parameters: {
             query?: never;
@@ -45,11 +11,6 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * Get the most recent reading for a station
-         * @description The ONE operation kept in sync across all four contract languages in
-         *     segment 4: OpenAPI (here), GraphQL SDL, Protocol Buffers, AsyncAPI.
-         */
         get: operations["getLatestReading"];
         put?: never;
         post?: never;
@@ -68,7 +29,6 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Record a new reading for a station */
         post: operations["recordReading"];
         delete?: never;
         options?: never;
@@ -80,42 +40,17 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        Station: {
-            id: string;
-            name: string;
-            lat: number;
-            lon: number;
-            elevationMeters: number;
-        };
         Reading: {
             id: string;
             stationId: string;
             /** Format: date-time */
             observedAt: string;
             temperatureCelsius: number;
-        };
-        NewReading: {
-            temperatureCelsius: number;
-        };
-    };
-    responses: {
-        /** @description Resource not found */
-        NotFound: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                /**
-                 * @example {
-                 *       "error": "station not found"
-                 *     }
-                 */
-                "application/json": {
-                    error: string;
-                };
-            };
+            /** @enum {string} */
+            qualityFlag?: "ok" | "suspect" | "missing";
         };
     };
+    responses: never;
     parameters: {
         StationId: string;
     };
@@ -125,80 +60,6 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    listStations: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "data": [
-                     *         {
-                     *           "id": "st-01",
-                     *           "name": "Gdansk-Letnica",
-                     *           "lat": 54.386,
-                     *           "lon": 18.66,
-                     *           "elevationMeters": 2
-                     *         },
-                     *         {
-                     *           "id": "st-02",
-                     *           "name": "Zakopane-Kasprowy",
-                     *           "lat": 49.232,
-                     *           "lon": 19.982,
-                     *           "elevationMeters": 1987
-                     *         }
-                     *       ]
-                     *     }
-                     */
-                    "application/json": {
-                        data: components["schemas"]["Station"][];
-                    };
-                };
-            };
-        };
-    };
-    getStation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                stationId: components["parameters"]["StationId"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "id": "st-01",
-                     *       "name": "Gdansk-Letnica",
-                     *       "lat": 54.386,
-                     *       "lon": 18.66,
-                     *       "elevationMeters": 2
-                     *     }
-                     */
-                    "application/json": components["schemas"]["Station"];
-                };
-            };
-            404: components["responses"]["NotFound"];
-        };
-    };
     getLatestReading: {
         parameters: {
             query?: never;
@@ -227,7 +88,22 @@ export interface operations {
                     "application/json": components["schemas"]["Reading"];
                 };
             };
-            404: components["responses"]["NotFound"];
+            /** @description Station not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "error": "station not found"
+                     *     }
+                     */
+                    "application/json": {
+                        error?: string;
+                    };
+                };
+            };
         };
     };
     recordReading: {
@@ -241,12 +117,9 @@ export interface operations {
         };
         requestBody: {
             content: {
-                /**
-                 * @example {
-                 *       "temperatureCelsius": 15.1
-                 *     }
-                 */
-                "application/json": components["schemas"]["NewReading"];
+                "application/json": {
+                    temperatureCelsius: number;
+                };
             };
         };
         responses: {
@@ -256,18 +129,9 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "id": "rd-1002",
-                     *       "stationId": "st-01",
-                     *       "observedAt": "2026-09-25T09:15:00Z",
-                     *       "temperatureCelsius": 15.1
-                     *     }
-                     */
                     "application/json": components["schemas"]["Reading"];
                 };
             };
-            404: components["responses"]["NotFound"];
         };
     };
 }

@@ -2,17 +2,12 @@ asyncapi: 3.1.0
 info:
   title: Weather Station Events
   version: 1.0.0
-  description: |
-    The SAME "reading" concept as contracts/openapi/weather.v1.yaml, this
-    time as an EVENT ("a new reading was recorded") instead of a request or
-    response. Validated only with `asyncapi validate` — no broker running,
-    that is lecture 10's topic.
 channels:
   stationReadings:
     address: "station/{stationId}/readings"
     parameters:
       stationId:
-        description: Station identifier, matches Station.id in the OpenAPI contract
+        description: The same stationId as in the OpenAPI contract
     messages:
       readingRecorded:
         $ref: "#/components/messages/ReadingRecorded"
@@ -21,7 +16,6 @@ operations:
     action: send
     channel:
       $ref: "#/channels/stationReadings"
-    summary: A weather station published a new reading
 components:
   messages:
     ReadingRecorded:
@@ -29,18 +23,13 @@ components:
         type: object
         required: [id, stationId, observedAt, temperatureCelsius]
         properties:
-          id:
-            type: string
-          stationId:
-            type: string
-          observedAt:
-            type: string
-            format: date-time
-          temperatureCelsius:
-            type: number
+          id: { type: string }
+          stationId: { type: string }
+          observedAt: { type: string, format: date-time }
+          temperatureCelsius: { type: number }
       examples:
         - payload:
-            id: "rd-1002"
-            stationId: "st-01"
-            observedAt: "2026-09-25T09:00:00Z"
+            id: rd-1003
+            stationId: st-01
+            observedAt: "2026-09-25T10:00:00Z"
             temperatureCelsius: 15.1

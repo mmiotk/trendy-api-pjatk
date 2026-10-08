@@ -1,16 +1,3 @@
-# The SAME operation as contracts/openapi/weather.v1.yaml
-# (GET /stations/{stationId}/readings/latest) written as a GraphQL SDL query
-# field. Validated only with buildSchema() from the "graphql" package — no
-# GraphQL server here, that is lecture 03's topic.
-
-type Station {
-  id: ID!
-  name: String!
-  lat: Float!
-  lon: Float!
-  elevationMeters: Float!
-}
-
 type Reading {
   id: ID!
   stationId: ID!
@@ -19,7 +6,5 @@ type Reading {
 }
 
 type Query {
-  stations: [Station!]!
-  station(id: ID!): Station
   latestReading(stationId: ID!): Reading
 }
