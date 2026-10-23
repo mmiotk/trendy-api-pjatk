@@ -1,0 +1,161 @@
+# `type` definiuje typ obiektowy. `Query` to punkt wejścia: jego pola są pytaniami, które można zadać.
+# `[Stage!]!`: zewnętrzny `!` zabrania null zamiast listy, wewnętrzny zabrania null jako elementu listy.
+"""
+Entry point to the festival API: each field answers one question of a screen.
+"""
+type Query {
+  "All stages of the festival."
+  stages: [Stage!]!
+
+  # Argument pola: `id` w nawiasach to dana, którą podaje klient; `ID!` oznacza, że jest wymagana.
+  # Wynik `Stage` bez `!`: gdy sceny nie ma, pole zwróci null zamiast błędu.
+  "One stage or `null` when `id` does not exist."
+  stage("Stage id, e.g. `stage-main`." id: ID!): Stage
+
+  "One concert or `null` when `id` does not exist."
+  concert("Concert id, e.g. `c1`." id: ID!): Concert
+
+  "All performers: bands and solo artists."
+  performers: [Performer!]!
+
+  # Wynik to lista, której elementy są jednym z typów unii `SearchResult`.
+  "Bands, solo artists and stages whose name contains the text."
+  search("A fragment of the name, case-insensitive." text: String!): [SearchResult!]!
+
+  # Argument pola może być obiektem: `filter` ma typ wejściowy; bez `!`, więc można go pominąć.
+  "Concerts matching the filter (no filter: all)."
+  concerts(filter: ConcertFilter): [Concert!]!
+
+  # Paginacja kursorowa: `first` to rozmiar strony (domyślnie 3), `after` to kursor poprzedniej strony.
+  # Wynik `ConcertConnection` zamiast listy: elementy strony razem z informacją, czy jest następna.
+  """
+  Concerts page by page, sorted by start time.
+
+  - `first`: page size, default 3, at most 20
+  - `after`: `endCursor` of the previous page; without it the first page is returned
+  """
+  concertsPage(filter: ConcertFilter, first: Int = 3, after: String): ConcertConnection!
+}
+
+# Ten komentarz `#` jest notatką dla czytającego plik: parser go pomija i nie trafia on do schematu.
+# Opisy w cudzysłowach (jak niżej) należą do schematu: widzi je introspekcja i Documentation Explorer.
+"A place with a stage and a program."
+type Stage {
+  # `ID` to identyfikator, `String` to tekst; `!` oznacza, że pole zawsze ma wartość i nie bywa null.
+  id: ID!
+  name: String!
+  # Brak `!`: scena może nie mieć ustalonego miejsca, więc to pole może zwrócić null.
+  "Where on the festival grounds the stage stands; `null` when the location is not decided yet."
+  location: String
+  # Relacja: pole zwraca obiekty innego typu, więc ze sceny można przejść do jej koncertów.
+  concerts: [Concert!]!
+}
+
+"One performance by one performer on one stage."
+type Concert {
+  id: ID!
+  title: String!
+  # Własny skalar jako typ pola: w odpowiedzi trafia do klienta jako tekst w formacie ISO 8601.
+  startsAt: DateTime!
+  # `Int` to liczba całkowita. Gdyby w danych jej brakowało, null nie może zostać w polu z `!`:
+  # błąd przechodzi do najbliższego pola nadrzędnego, które dopuszcza null.
+  durationMinutes: Int!
+  # Pole typu enum: wartością jest jedna z nazw wymienionych w `enum Genre`, np. JAZZ.
+  genre: Genre!
+  # Relacja w drugą stronę: z koncertu z powrotem do sceny. Obie strony razem tworzą graf.
+  stage: Stage!
+  # Pole zwraca interfejs, a nie typ konkretny: wykonawcą bywa zespół albo solista.
+  performer: Performer!
+}
+
+# `interface` wymienia pola wspólne dla kilku typów; zapytanie o interfejs może pytać tylko o te pola.
+"Someone who can play a concert."
+interface Performer {
+  id: ID!
+  name: String!
+  concerts: [Concert!]!
+}
+
+# `implements`: typ ma wszystkie pola interfejsu i może dodać własne (tu `hometown`, `members`).
+"A group of musicians."
+type Band implements Performer {
+  id: ID!
+  name: String!
+  "`null` when the band gave no hometown."
+  hometown: String
+  members: [String!]!
+  # Brak `agentEmail`: pole istnieje w danych, ale schemat go nie udostępnia, więc klient go nie zobaczy.
+  concerts: [Concert!]!
+}
+
+"One musician."
+type SoloArtist implements Performer {
+  id: ID!
+  name: String!
+  # Pole tylko tego typu: nie ma go w interfejsie, więc zapytać o nie można przez `... on SoloArtist`.
+  instrument: String!
+  concerts: [Concert!]!
+}
+
+# `union` wylicza typy, które może zwrócić pole; w odróżnieniu od interfejsu nie wymaga wspólnych pól.
+"What the search can find."
+union SearchResult = Band | SoloArtist | Stage
+
+# `input` to typ wejściowy: opisuje dane, które klient wysyła w argumencie. Żadne pole nie ma `!`,
+# więc każdy warunek filtra jest opcjonalny.
+"Concert filter: all fields are optional, a concert must satisfy every given one."
+input ConcertFilter {
+  stageId: ID
+  "A fragment of the title, case-insensitive."
+  titleContains: String
+  genre: Genre
+  # Ten sam skalar na wejściu: klient wysyła datę jako tekst, a `coerceInputValue` zamienia go na `Date`.
+  "Concerts that start at this time or later."
+  from: DateTime
+  performer: PerformerRef
+}
+
+# `@oneOf`: wartość musi mieć dokładnie jedno pole. Tak zastępujemy unię wejściową, której nie ma.
+"Exactly one field must be given: the performer is a band or a solo artist."
+input PerformerRef @oneOf {
+  bandId: ID
+  soloArtistId: ID
+}
+
+# `enum` to zamknięty zbiór wartości. Klient wpisuje nazwę bez cudzysłowów, inną serwer odrzuci.
+enum Genre {
+  "Guitars, drums, loudness."
+  ROCK
+  "Improvisation on a theme."
+  JAZZ
+  "Synthesizers and sequencers."
+  ELECTRONIC
+  "Acoustic songs from the village tradition."
+  FOLK
+}
+
+# `scalar` deklaruje tylko nazwę typu; konwersje dostarcza obiekt w resolverach pod kluczem `DateTime`.
+"A moment in time written as ISO 8601 text, e.g. 2026-07-10T18:00:00Z."
+scalar DateTime
+
+# `Connection` to wzorzec Relay: `edges` to elementy strony, a `pageInfo` opisuje jej położenie.
+"One page of concerts."
+type ConcertConnection {
+  edges: [ConcertEdge!]!
+  pageInfo: PageInfo!
+}
+
+# Krawędź (`edge`) łączy element listy (`node`) z jego pozycją (`cursor`).
+type ConcertEdge {
+  node: Concert!
+  # Kursor jest nieprzezroczysty: klient go nie interpretuje, tylko odsyła w `after`.
+  "An opaque position of a concert; passed as `after` it gives the next page."
+  cursor: String!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  # Bez `!`: pusta strona nie ma ostatniego koncertu, więc `endCursor` bywa null.
+  "Cursor of the last concert on the page, `null` for an empty page."
+  endCursor: String
+}
