@@ -1,9 +1,8 @@
-// Dane festiwalu w pamięci. Obiekty wskazują na siebie, więc dane już są grafem.
+// Dane festiwalu w pamięci.
 export interface Stage {
   id: string;
   name: string;
   location?: string; // nie każda scena ma ustalone miejsce
-  // Relacja w danych: scena trzyma tablicę swoich koncertów, a koncert wskazuje swoją scenę.
   concerts: Concert[];
 }
 
@@ -12,7 +11,7 @@ export interface Band {
   name: string;
   hometown?: string;
   members: string[];
-  agentEmail: string; // pole wewnętrzne, którego schemat nie udostępnia
+  agentEmail: string; // pole wewnętrzne
   concerts: Concert[];
 }
 
@@ -20,11 +19,10 @@ export interface SoloArtist {
   id: string;
   name: string;
   instrument: string;
-  agentEmail: string; // pole wewnętrzne, którego schemat nie udostępnia
+  agentEmail: string; // pole wewnętrzne
   concerts: Concert[];
 }
 
-// Wykonawca to zespół albo solista: dwa różne kształty obiektów w jednej tablicy.
 export type Performer = Band | SoloArtist;
 
 // Gatunek zapisany jako napis małymi literami, jak w bazie.
@@ -43,7 +41,7 @@ export interface Concert {
 // Tablice `concerts` w scenach i u wykonawców startują puste; wypełnia je funkcja `schedule` niżej.
 export const stages: Stage[] = [
   { id: "stage-main", name: "Main Stage", location: "West Meadow", concerts: [] },
-  // Ta scena nie ma pola `location`: w odpowiedzi GraphQL pole będzie miało wartość null.
+  // Ta scena nie ma pola `location`.
   { id: "stage-forest", name: "Forest Stage", concerts: [] },
 ];
 
@@ -56,7 +54,6 @@ export const performers: Performer[] = [
 
 export const concerts: Concert[] = [];
 
-// Dodaje koncert i wpisuje go na scenę oraz do wykonawcy (relacje w obie strony).
 function schedule(id: string, title: string, startsAt: string, durationMinutes: number, genre: Genre, stageId: string, performerId: string) {
   const stage = stages.find((s) => s.id === stageId)!;
   const performer = performers.find((p) => p.id === performerId)!;
@@ -66,7 +63,7 @@ function schedule(id: string, title: string, startsAt: string, durationMinutes: 
   performer.concerts.push(concert);
 }
 
-// Siedem koncertów na dwóch scenach; każde wywołanie łączy koncert ze sceną i wykonawcą.
+// Siedem koncertów na dwóch scenach.
 schedule("c1", "Evening Thunder", "2026-07-10T18:00:00Z", 75, "rock", "stage-main", "band-granite");
 schedule("c2", "Electric Fields", "2026-07-10T20:00:00Z", 90, "electronic", "stage-main", "band-neon");
 schedule("c3", "Final Night", "2026-07-11T19:00:00Z", 80, "rock", "stage-main", "band-granite");
