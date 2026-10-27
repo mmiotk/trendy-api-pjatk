@@ -1,0 +1,72 @@
+type Query {
+  games(limit: Int): [Game!]!
+  game(id: ID!): Game
+  loans: [Loan!]!
+}
+
+type Mutation {
+  borrowCopy(input: BorrowCopyInput!): BorrowCopyResult!
+}
+
+type Game {
+  id: ID!
+  title: String!
+  year: Int!
+  minPlayers: Int!
+  maxPlayers: Int!
+  publisher: Publisher!
+  reviews: [Review!]!
+  copies: [Copy!]!
+}
+
+type Publisher {
+  id: ID!
+  name: String!
+  country: String!
+}
+
+type Review {
+  id: ID!
+  rating: Int!
+  comment: String!
+}
+
+type Copy {
+  id: ID!
+  available: Boolean!
+}
+
+type Loan {
+  id: ID!
+  borrower: String!
+}
+
+# Wejście mutacji to jeden obiekt `input`; wynik to osobny typ `Payload`.
+input BorrowCopyInput {
+  gameId: ID!
+  borrower: String!
+}
+
+# Błędy oczekiwane to zwykłe typy, a wynik mutacji to unia wszystkich możliwych rezultatów.
+union BorrowCopyResult = BorrowCopySuccess | CopyUnavailable | GameNotFound
+
+type BorrowCopySuccess {
+  loan: Loan!
+  copy: Copy!
+}
+
+type CopyUnavailable {
+  gameId: ID!
+  message: String!
+}
+
+type GameNotFound {
+  gameId: ID!
+  message: String!
+}
+
+# Typ przygotowany na przyszłość: żadne pole go jeszcze nie zwraca.
+type Member {
+  id: ID!
+  name: String!
+}
