@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package shipments.v1;
+
+// Rozmiar skrytki pochodzi z kontraktu usługi skrytek, więc plik go importuje zamiast powielać.
+import "lockers/v1/lockers.proto";
+
+service ShipmentService {
+  rpc CreateShipment(CreateShipmentRequest) returns (CreateShipmentResponse);
+}
+
+message CreateShipmentRequest {
+  string locker_id = 1;
+  lockers.v1.CompartmentSize size = 2;
+  string recipient_postal_code = 3;
+}
+
+message CreateShipmentResponse {
+  string shipment_id = 1;
+  string compartment_id = 2;
+  string pickup_code = 3;
+}

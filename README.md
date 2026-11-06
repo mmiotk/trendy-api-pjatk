@@ -9,5 +9,6 @@ Kod demo pisany na wykładach. Repozytorium jest aktualizowane po każdym wykła
 | Wykład 03 — GraphQL: modelowanie schematu | [`lecture03/`](lecture03/) |
 | Wykład 04 — GraphQL: zapytania, mutacje, błędy, wydajność | [`lecture04/`](lecture04/) |
 | Wykład 05 — GraphQL: subskrypcje, bezpieczeństwo, federacja | [`lecture05/`](lecture05/) |
+| Wykład 06 — RPC i podstawy gRPC | [`lecture06/`](lecture06/) |
 
 Projekty demo uruchamia się według `README.md` w ich katalogu; zależności (`node_modules` itp.) instaluje się lokalnie, nie są w repozytorium.

@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package lockers.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// Usługa to zestaw metod wywoływanych zdalnie. GetLocker jest zdalną wersją funkcji getLocker z data.ts.
+service LockerService {
+  rpc GetLocker(GetLockerRequest) returns (GetLockerResponse);
+  rpc ReserveCompartment(ReserveCompartmentRequest) returns (ReserveCompartmentResponse);
+}
+
+message GetLockerRequest {
+  string id = 1;
+}
+
+message GetLockerResponse {
+  Locker locker = 1;
+}
+
+message Locker {
+  string id = 1;
+  string city = 2;
+  string postal_code = 3;
+  repeated Compartment compartments = 4;
+}
+
+message Compartment {
+  string id = 1;
+  CompartmentSize size = 2;
+  bool free = 3;
+}
+
+// Pierwsza wartość enuma musi mieć numer 0: to wartość domyślna pola.
+enum CompartmentSize {
+  COMPARTMENT_SIZE_UNSPECIFIED = 0;
+  COMPARTMENT_SIZE_SMALL = 1;
+  COMPARTMENT_SIZE_MEDIUM = 2;
+  COMPARTMENT_SIZE_LARGE = 3;
+}
+
+// Rezerwacja ma własne Request i Response; kod pocztowy odbiorcy ma format 00-000.
+message ReserveCompartmentRequest {
+  string locker_id = 1;
+  CompartmentSize size = 2;
+  string postal_code = 3;
+}
+
+message ReserveCompartmentResponse {
+  string compartment_id = 1;
+  string pickup_code = 2;
+  google.protobuf.Timestamp expires_at = 3;
+}
