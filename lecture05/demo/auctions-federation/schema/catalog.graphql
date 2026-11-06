@@ -1,0 +1,13 @@
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.5", import: ["@key"])
+
+type Query {
+  item(id: ID!): Item
+  items: [Item!]!
+}
+
+"A thing that can be sold. The catalog subgraph owns it."
+type Item @key(fields: "id") {
+  id: ID!
+  title: String!
+  description: String!
+}

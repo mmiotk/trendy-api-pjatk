@@ -1,0 +1,79 @@
+schema @link(url: "https://specs.apollo.dev/link/v1.0") @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION) {
+  query: Query
+}
+
+directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__field(
+  graph: join__Graph
+  requires: join__FieldSet
+  provides: join__FieldSet
+  type: String
+  external: Boolean
+  override: String
+  usedOverridden: Boolean
+) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @join__implements(graph: join__Graph!, interface: String!) repeatable on OBJECT | INTERFACE
+
+directive @join__type(
+  graph: join__Graph!
+  key: join__FieldSet
+  extension: Boolean! = false
+  resolvable: Boolean! = true
+  isInterfaceObject: Boolean! = false
+) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on UNION
+
+scalar join__FieldSet
+
+directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
+
+scalar link__Import
+
+enum link__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+enum join__Graph {
+  BIDDING @join__graph(name: "bidding", url: "http://localhost:4062/graphql")
+  CATALOG @join__graph(name: "catalog", url: "http://localhost:4061/graphql")
+}
+
+type Query @join__type(graph: BIDDING) @join__type(graph: CATALOG) {
+  auctions: [Auction!]! @join__field(graph: BIDDING)
+  item(id: ID!): Item @join__field(graph: CATALOG)
+  items: [Item!]! @join__field(graph: CATALOG)
+}
+
+type Auction @join__type(graph: BIDDING) {
+  id: ID!
+  currentPrice: Int!
+  status: AuctionStatus!
+  item: Item!
+}
+
+"""
+A thing that can be sold. The catalog subgraph owns it.
+"""
+type Item @join__type(graph: BIDDING, key: "id") @join__type(graph: CATALOG, key: "id") {
+  id: ID!
+  auctions: [Auction!]! @join__field(graph: BIDDING)
+  title: String! @join__field(graph: CATALOG)
+  description: String! @join__field(graph: CATALOG)
+}
+
+enum AuctionStatus @join__type(graph: BIDDING) {
+  OPEN @join__enumValue(graph: BIDDING)
+  CLOSED @join__enumValue(graph: BIDDING)
+}

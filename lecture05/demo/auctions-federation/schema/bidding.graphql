@@ -1,0 +1,23 @@
+extend schema @link(url: "https://specs.apollo.dev/federation/v2.5", import: ["@key"])
+
+type Query {
+  auctions: [Auction!]!
+}
+
+type Auction {
+  id: ID!
+  currentPrice: Int!
+  status: AuctionStatus!
+  item: Item!
+}
+
+enum AuctionStatus {
+  OPEN
+  CLOSED
+}
+
+# Ten sam Item co w subgrafie catalog: bidding zna tylko jego id i dodaje pole auctions.
+type Item @key(fields: "id") {
+  id: ID!
+  auctions: [Auction!]!
+}

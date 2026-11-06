@@ -1,0 +1,79 @@
+"Weight of a scalar field in the query cost; fields without it weigh 1."
+directive @cost(weight: Int!) on FIELD_DEFINITION
+
+"Field is available only with a valid token."
+directive @auth on FIELD_DEFINITION
+
+scalar File
+
+type Query {
+  "Single auction by id; null when it does not exist."
+  auction(id: ID!): Auction
+  "Auctions in database order; `limit` defaults to 10 and is at most 100."
+  auctions(limit: Int): [Auction!]!
+  "Items whose title contains the text (1 to 50 characters), at most 10 results."
+  searchItems(title: String!): [Item!]!
+  "The user who owns the token."
+  me: User @auth
+  "Bids placed by the user who owns the token."
+  myBids: [Bid!]! @auth
+}
+
+type Mutation {
+  "Places a bid; the amount must be higher than the current price."
+  placeBid(auctionId: ID!, amount: Int!): Bid! @auth
+  "Closes an auction; only its seller can do it."
+  closeAuction(id: ID!): Auction!
+  "Accepts a photo of the item and returns its name and size."
+  uploadPhoto(auctionId: ID!, file: File!): String!
+}
+
+type Subscription {
+  "Every new bid on one auction."
+  bidPlaced(auctionId: ID!): Bid!
+}
+
+"An item offered for sale together with its price and bids."
+type Auction {
+  id: ID!
+  item: Item!
+  seller: User!
+  "Highest bid so far, in whole dollars."
+  currentPrice: Int! @deprecated(reason: "Use currentPriceCents.")
+  "Highest bid so far, in cents."
+  currentPriceCents: Int!
+  status: AuctionStatus!
+  bids: [Bid!]!
+}
+
+enum AuctionStatus {
+  OPEN
+  CLOSED
+}
+
+"A thing that can be sold."
+type Item {
+  id: ID!
+  title: String!
+  "Free text, can be long."
+  description: String! @cost(weight: 4)
+}
+
+"One offer made by a user on an auction."
+type Bid {
+  id: ID!
+  "Offered amount in whole dollars."
+  amount: Int!
+  bidder: User!
+  auction: Auction!
+}
+
+"A person who sells or bids."
+type User {
+  id: ID!
+  name: String!
+  "Home address; only the user can read it."
+  address: String
+  "Auctions where this user is the seller."
+  auctions: [Auction!]!
+}
