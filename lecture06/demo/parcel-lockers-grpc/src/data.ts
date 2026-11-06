@@ -9,38 +9,22 @@ export interface Compartment {
 
 export interface Locker {
   id: string;
-  city: string;
-  postalCode: string;
   compartments: Compartment[];
 }
 
-// Dane w pamięci procesu: dwa paczkomaty, w każdym skrytki trzech rozmiarów.
+// Dane w pamięci procesu: jeden paczkomat z trzema skrytkami, duża jest zajęta.
 export const lockers: Locker[] = [
   {
     id: "WAW01",
-    city: "Warsaw",
-    postalCode: "00-001",
     compartments: [
       { id: "WAW01-1", size: "COMPARTMENT_SIZE_SMALL", free: true },
       { id: "WAW01-2", size: "COMPARTMENT_SIZE_MEDIUM", free: true },
       { id: "WAW01-3", size: "COMPARTMENT_SIZE_LARGE", free: false },
     ],
   },
-  {
-    id: "KRK01",
-    city: "Krakow",
-    postalCode: "30-001",
-    compartments: [
-      { id: "KRK01-1", size: "COMPARTMENT_SIZE_SMALL", free: true },
-      { id: "KRK01-2", size: "COMPARTMENT_SIZE_MEDIUM", free: false },
-      { id: "KRK01-3", size: "COMPARTMENT_SIZE_LARGE", free: true },
-    ],
-  },
 ];
 
+// Zwykła funkcja w tym samym procesie: nieznany identyfikator daje undefined.
 export function getLocker(id: string): Locker | undefined {
   return lockers.find((locker) => locker.id === id);
 }
-
-// Przesyłki utworzone przez ShipmentService.
-export const shipments: { id: string; compartmentId: string }[] = [];

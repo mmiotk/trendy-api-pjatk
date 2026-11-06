@@ -6,16 +6,15 @@ import type { ProtoGrpcType as ShipmentsGrpcType } from "./generated/shipments.t
 // Opcje ładowania: `includeDirs` to katalog, od którego liczą się ścieżki importów w plikach .proto.
 const options: protoLoader.Options = {
   includeDirs: ["proto"],
-  longs: String, // liczby 64-bitowe jako napisy
   enums: String, // enumy jako nazwy wartości, nie liczby
   defaults: true, // brakujące pola dostają wartość domyślną
 };
 
 // Plik .proto jest czytany przy starcie procesu, więc serwer i klient widzą ten sam opis usługi.
-export const lockersDefinition = protoLoader.loadSync("lockers/v1/lockers.proto", options);
+const lockersDefinition = protoLoader.loadSync("lockers/v1/lockers.proto", options);
 
 // Ten sam pakiet, ale z typami wygenerowanymi z pliku .proto.
 export const lockersPackage = grpc.loadPackageDefinition(lockersDefinition) as unknown as LockersGrpcType;
 
-export const shipmentsDefinition = protoLoader.loadSync("shipments/v1/shipments.proto", options);
+const shipmentsDefinition = protoLoader.loadSync("shipments/v1/shipments.proto", options);
 export const shipmentsPackage = grpc.loadPackageDefinition(shipmentsDefinition) as unknown as ShipmentsGrpcType;

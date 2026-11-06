@@ -17,6 +17,5 @@ message CreateShipmentRequest {
 
 message CreateShipmentResponse {
   string shipment_id = 1;
-  string compartment_id = 2;
-  string pickup_code = 3;
+  string pickup_code = 2;
 }

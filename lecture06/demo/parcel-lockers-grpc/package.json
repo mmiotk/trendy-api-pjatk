@@ -4,7 +4,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "locker": "node --watch --watch-path=src --watch-path=proto src/lockerServer.ts",
-    "generate": "proto-loader-gen-types --longs=String --enums=String --defaults --grpcLib=@grpc/grpc-js --importFileExtension=.ts -I proto --outDir src/generated lockers/v1/lockers.proto shipments/v1/shipments.proto",
+    "generate": "proto-loader-gen-types --enums=String --defaults --grpcLib=@grpc/grpc-js --importFileExtension=.ts -I proto --outDir src/generated lockers/v1/lockers.proto shipments/v1/shipments.proto",
     "shipment": "node --watch --watch-path=src --watch-path=proto src/shipmentServer.ts"
   },
   "type": "module",
@@ -16,8 +16,6 @@
   "dependencies": {
     "@grpc/grpc-js": "1.14.6",
     "@grpc/proto-loader": "0.8.1",
-    "@grpc/reflection": "1.0.4",
-    "google-proto-files": "6.1.0",
-    "protobufjs": "7.6.6"
+    "google-proto-files": "6.1.0"
   }
 }
