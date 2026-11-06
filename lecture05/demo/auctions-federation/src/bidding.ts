@@ -5,10 +5,8 @@ import { parse } from "graphql";
 import { createYoga } from "graphql-yoga";
 
 const auctions = [
-  { id: "1", itemId: "1", currentPrice: 120, status: "OPEN" },
-  { id: "2", itemId: "2", currentPrice: 340, status: "OPEN" },
-  { id: "3", itemId: "3", currentPrice: 90, status: "OPEN" },
-  { id: "4", itemId: "4", currentPrice: 500, status: "CLOSED" },
+  { id: "1", itemId: "1", currentPrice: 120 },
+  { id: "2", itemId: "2", currentPrice: 340 },
 ];
 
 const resolvers = {

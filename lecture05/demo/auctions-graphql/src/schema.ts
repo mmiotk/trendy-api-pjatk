@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { GraphQLError } from "graphql";
 import { createPubSub, createSchema, filter } from "graphql-yoga";
 import type { Context } from "./context.ts";
-import { applyAuth, trackDeprecated } from "./directives.ts";
+import { applyAuth } from "./directives.ts";
 import { auctionSeller, loggedIn, ownProfile, runPipes, validAuctionId } from "./pipes.ts";
 import { pageSize } from "./rules.ts";
 
@@ -30,10 +30,6 @@ const resolvers = {
       const pattern = `%${args.title.replace(/[\\%_]/g, "\\$&")}%`;
       return ctx.query("SELECT id, title, description FROM items WHERE title LIKE ? ESCAPE '\\' LIMIT 10", pattern);
     },
-    // Dyrektywa `@auth` w schemacie sprawdziła już, że `ctx.me` istnieje.
-    me: (_parent: unknown, _args: unknown, ctx: Context) => ctx.me,
-    myBids: (_parent: unknown, _args: unknown, ctx: Context) =>
-      ctx.query(`SELECT ${BID_COLUMNS} FROM bids WHERE bidder_id = ?`, ctx.me!.id),
   },
   Mutation: {
     // Licytującym jest właściciel tokenu, a nie argument: `@auth` sprawdziła już, że `ctx.me` istnieje.
@@ -66,9 +62,6 @@ const resolvers = {
       if (!auction) throw new GraphQLError("Auction is already closed");
       return auction;
     },
-    // `File` pochodzi z Fetch API: nazwę i rozmiar czyta się tak jak z odpowiedzi HTTP.
-    uploadPhoto: (_parent: unknown, args: { auctionId: string; file: File }) =>
-      `${args.auctionId}: ${args.file.name}, ${args.file.size} bytes`,
   },
   Subscription: {
     bidPlaced: {
@@ -92,11 +85,9 @@ const resolvers = {
   Bid: {
     bidder: (parent: { bidderId: number }, _args: unknown, ctx: Context) =>
       ctx.query("SELECT id, name FROM users WHERE id = ?", parent.bidderId)[0],
-    auction: (parent: { auctionId: number }, _args: unknown, ctx: Context) =>
-      ctx.query(`SELECT ${AUCTION_COLUMNS} FROM auctions WHERE id = ?`, parent.auctionId)[0],
   },
   User: {
-    // Pipes na polu typu `User` działają na każdej ścieżce do użytkownika: `seller`, `bidder` i `me`.
+    // Pipes na polu typu `User` działają na każdej ścieżce do użytkownika: `seller` i `bidder`.
     address: (parent: { id: number }, _args: unknown, ctx: Context) => {
       runPipes(ctx, parent, [loggedIn, ownProfile]);
       return ctx.query("SELECT address FROM users WHERE id = ?", parent.id)[0].address;
@@ -106,4 +97,4 @@ const resolvers = {
   },
 };
 
-export const schema = trackDeprecated(applyAuth(createSchema<Context>({ typeDefs, resolvers })));
+export const schema = applyAuth(createSchema<Context>({ typeDefs, resolvers }));

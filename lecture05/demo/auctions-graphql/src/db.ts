@@ -24,32 +24,22 @@ export function createDb(): DatabaseSync {
 
     INSERT INTO users VALUES
       (1, 'Maria', '12 Oak Street, Boston'),
-      (2, 'Tom', '5 River Road, Denver'),
-      (3, 'Nina', '88 Hill Avenue, Austin'),
-      (4, 'Oscar', '3 Pine Lane, Seattle');
+      (2, 'Nina', '88 Hill Avenue, Austin'),
+      (3, 'Oscar', '3 Pine Lane, Seattle');
 
-    INSERT INTO tokens VALUES ('maria-token', 1), ('tom-token', 2), ('nina-token', 3);
+    INSERT INTO tokens VALUES ('maria-token', 1), ('nina-token', 2);
 
     INSERT INTO items VALUES
-      (1, 'Vintage typewriter', 'Underwood No. 5 from 1928, restored, with a new ribbon and the original wooden case.'),
-      (2, 'Mechanical watch', 'Hand-wound watch from 1962 with a steel case, serviced last year.'),
-      (3, 'Oak writing desk', 'Solid oak desk with three drawers and a green leather top, 120 cm wide.'),
-      (4, 'First edition atlas', 'World atlas printed in 1954, 64 colour maps, light wear on the spine.'),
-      (5, 'Film camera', '35 mm rangefinder camera with a 50 mm lens and a leather strap.'),
-      (6, 'Brass telescope', 'Three-draw brass telescope from the 1900s with a wooden tripod.');
+      (1, 'Vintage typewriter', 'Underwood No. 5 from 1928, restored, with the original wooden case.'),
+      (2, 'Mechanical watch', 'Hand-wound watch from 1962 with a steel case.');
 
     INSERT INTO auctions VALUES
       (1, 1, 1, 120, 'OPEN'),
-      (2, 2, 1, 340, 'OPEN'),
-      (3, 3, 2, 90, 'OPEN'),
-      (4, 4, 2, 500, 'OPEN'),
-      (5, 5, 1, 75, 'OPEN'),
-      (6, 6, 2, 210, 'OPEN');
+      (2, 2, 1, 340, 'OPEN');
 
     INSERT INTO bids (auction_id, bidder_id, amount) VALUES
-      (1, 3, 100), (1, 4, 110), (1, 3, 120),
-      (2, 4, 320), (2, 3, 340),
-      (3, 3, 90);
+      (1, 2, 100),
+      (1, 3, 120);
   `);
 
   return db;

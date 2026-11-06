@@ -2,7 +2,6 @@ extend schema @link(url: "https://specs.apollo.dev/federation/v2.5", import: ["@
 
 type Query {
   item(id: ID!): Item
-  items: [Item!]!
 }
 
 "A thing that can be sold. The catalog subgraph owns it."

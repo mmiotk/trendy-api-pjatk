@@ -8,7 +8,7 @@ async function send(label: string, query: string) {
   });
   const body: any = await response.json();
   const messages = body.errors?.map((error: { message: string }) => error.message).join("; ") ?? "ok";
-  console.log(label, "|", response.status, "| sql:", response.headers.get("x-sql-statements"), "|", messages);
+  console.log(label, "|", response.status, "|", messages);
 }
 
 // Zapytanie cykliczne: auction -> seller -> auctions -> seller -> ... -> id. `depth` liczy też liść `id`.
@@ -25,9 +25,7 @@ function aliases(count: number): string {
   return `{ ${fields.join(" ")} }`;
 }
 
-await send("depth 6  ", nested(6));
-await send("depth 7  ", nested(7));
-await send("depth 50 ", nested(50));
-await send("aliases 15 ", aliases(15));
-await send("aliases 16 ", aliases(16));
-await send("aliases 300", aliases(300));
+await send("depth 6   ", nested(6));
+await send("depth 7   ", nested(7));
+await send("aliases 15", aliases(15));
+await send("aliases 16", aliases(16));

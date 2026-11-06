@@ -53,13 +53,11 @@ enum join__Graph {
 type Query @join__type(graph: BIDDING) @join__type(graph: CATALOG) {
   auctions: [Auction!]! @join__field(graph: BIDDING)
   item(id: ID!): Item @join__field(graph: CATALOG)
-  items: [Item!]! @join__field(graph: CATALOG)
 }
 
 type Auction @join__type(graph: BIDDING) {
   id: ID!
   currentPrice: Int!
-  status: AuctionStatus!
   item: Item!
 }
 
@@ -71,9 +69,4 @@ type Item @join__type(graph: BIDDING, key: "id") @join__type(graph: CATALOG, key
   auctions: [Auction!]! @join__field(graph: BIDDING)
   title: String! @join__field(graph: CATALOG)
   description: String! @join__field(graph: CATALOG)
-}
-
-enum AuctionStatus @join__type(graph: BIDDING) {
-  OPEN @join__enumValue(graph: BIDDING)
-  CLOSED @join__enumValue(graph: BIDDING)
 }

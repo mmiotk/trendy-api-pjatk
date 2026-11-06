@@ -7,13 +7,7 @@ type Query {
 type Auction {
   id: ID!
   currentPrice: Int!
-  status: AuctionStatus!
   item: Item!
-}
-
-enum AuctionStatus {
-  OPEN
-  CLOSED
 }
 
 # Ten sam Item co w subgrafie catalog: bidding zna tylko jego id i dodaje pole auctions.

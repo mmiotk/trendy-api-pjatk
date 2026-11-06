@@ -13,18 +13,17 @@ Wymagania: Node.js 24 (uruchamia pliki `.ts` bez kompilacji; `node:sqlite` jest 
 
 | Plik | Zawartość |
 |---|---|
-| `schema/auctions.graphql` | cały schemat w SDL: `Query`, `Mutation` (także `uploadPhoto` ze skalarem `File`), `Subscription`, typy, dyrektywy `@cost` i `@auth` |
-| `operations.json` | allowlista: operacje, które serwer w produkcji przyjmuje |
-| `src/db.ts` | baza `node:sqlite`: tabele i dane zakładane przy starcie (użytkownicy, tokeny, przedmioty, aukcje, oferty) |
-| `src/context.ts` | kontekst żądania: dostęp do bazy, licznik instrukcji SQL, `me` z tokenu |
-| `src/schema.ts` | `createSchema`, resolvery (w tym `uploadPhoto`), `PubSub` i filtr subskrypcji |
-| `src/rules.ts` | reguły walidacji: głębokość, aliasy, koszt |
-| `src/directives.ts` | transformacja schematu: `@auth` i licznik użycia pól z `@deprecated` |
+| `schema/auctions.graphql` | cały schemat w SDL: `Query`, `Mutation`, `Subscription`, typy, dyrektywy `@cost` i `@auth`, pole `currentPrice` z `@deprecated` |
+| `operations.json` | allowlista: operacja `auctionById`, jedyna, którą serwer w produkcji przyjmuje |
+| `src/db.ts` | baza `node:sqlite`: tabele i dane zakładane przy starcie (trzech użytkowników, tokeny, dwa przedmioty, dwie aukcje, dwie oferty) |
+| `src/context.ts` | kontekst żądania: funkcja `query` do bazy i `me` z tokenu |
+| `src/schema.ts` | `createSchema`, resolvery, `PubSub` i filtr subskrypcji |
+| `src/rules.ts` | reguły walidacji: głębokość, aliasy, koszt (bez rozwijania fragmentów) |
+| `src/directives.ts` | transformacja schematu: `@auth` |
 | `src/pipes.ts` | pipes: logical, access, ownership |
-| `src/server.ts` | `createServer` z `node:http` (log dostępu), Yoga z wtyczkami (m.in. log nazw operacji), WebSocket przez `graphql-ws`, port 4050 |
+| `src/server.ts` | Yoga z wtyczką limitów i wtyczkami produkcyjnymi, WebSocket przez `graphql-ws` (wzór z dokumentacji Yogi), port 4050 |
 | `src/clientSubscribe.ts` | klient `@apollo/client` w Node z `split`: mutacje przez HTTP, subskrypcja przez WebSocket |
-| `src/attack.ts` | zapytania odrzucane przed wykonaniem: za głębokie i z setkami aliasów |
-| `src/docs.ts` | dokumentacja statyczna `docs/schema.html` wygenerowana ze schematu |
+| `src/attack.ts` | zapytania na granicy limitów i tuż za nią: głębokość 6 i 7, 15 i 16 aliasów |
 
 ## Polecenia
 
@@ -32,13 +31,12 @@ Wymagania: Node.js 24 (uruchamia pliki `.ts` bez kompilacji; `node:sqlite` jest 
 npm ci                          # instalacja z package-lock.json
 npm run dev                     # serwer z restartem po zmianie src/ i schema/, http://localhost:4050/graphql
 npm run typecheck               # tsc --noEmit
-NODE_ENV=production npm start   # introspekcja wyłączona, tylko operacje z operations.json
+NODE_ENV=production npm start   # introspekcja wyłączona, przez HTTP tylko operacje z operations.json
 node src/clientSubscribe.ts     # klient z split (wymaga działającego serwera)
-node src/attack.ts              # odrzucone zapytania (wymaga serwera w trybie deweloperskim)
-node src/docs.ts                # docs/schema.html
+node src/attack.ts              # granice limitów (wymaga serwera w trybie deweloperskim)
 ```
 
 Zapytania wpisuje się w GraphiQL; ich treść jest w `../PROWADZACY.md`. Port zmienia zmienna `PORT`. Baza jest w
 pamięci, więc każdy restart serwera (także ten po zapisaniu pliku w `npm run dev`) przywraca stan początkowy.
-Tokeny testowe: `maria-token` (Maria, sprzedawca aukcji 1, 2 i 5), `tom-token` (Tom, sprzedawca aukcji 3, 4 i 6),
-`nina-token` (Nina, licytuje). Oscar nie ma tokenu.
+Tokeny testowe: `maria-token` (Maria, sprzedawca aukcji 1 i 2), `nina-token` (Nina, licytuje). Oscar licytuje, ale nie ma
+tokenu.

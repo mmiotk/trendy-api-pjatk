@@ -1,4 +1,3 @@
 {
-  "auctionById": "query AuctionById($id: ID!) { auction(id: $id) { id currentPrice status item { title } } }",
-  "openAuctions": "query OpenAuctions { auctions(limit: 5) { id currentPrice item { title } } }"
+  "auctionById": "query AuctionById($id: ID!) { auction(id: $id) { id currentPrice status item { title } } }"
 }

@@ -11,13 +11,12 @@ Wymagania: Node.js 24, npm.
 
 | Plik | Zawartość |
 |---|---|
-| `schema/catalog.graphql` | subgraf `catalog`: `Item` z `@key(fields: "id")`, `Query.item`, `Query.items` |
+| `schema/catalog.graphql` | subgraf `catalog`: `Item` z `@key(fields: "id")`, `Query.item` |
 | `schema/bidding.graphql` | subgraf `bidding`: `Auction` i rozszerzenie `Item` (pole `auctions`) przez ten sam `@key` |
-| `src/catalog.ts` | serwer subgrafu `catalog`, port 4061, dane w tablicy |
-| `src/bidding.ts` | serwer subgrafu `bidding`, port 4062, dane w tablicy |
+| `src/catalog.ts` | serwer subgrafu `catalog`, port 4061, dwa przedmioty w tablicy |
+| `src/bidding.ts` | serwer subgrafu `bidding`, port 4062, dwie aukcje w tablicy |
 | `src/compose.ts` | kompozycja: `schema/*.graphql` → `supergraph.graphql` |
 | `supergraph.graphql` | wynik kompozycji (adresy subgrafów zapisane w `join__Graph`) |
-| `gateway.config.ts` | konfiguracja bramy: planer z Hive Router i plan zapytania w `extensions` na żądanie |
 
 ## Polecenia
 
@@ -27,8 +26,8 @@ npm run catalog        # terminal 1, http://localhost:4061/graphql
 npm run bidding        # terminal 2, http://localhost:4062/graphql
 npm run compose        # zapisuje supergraph.graphql (adresy z CATALOG_URL i BIDDING_URL, domyślnie porty 4061 i 4062)
 npm run gateway        # terminal 3, brama na http://localhost:4060/graphql
-npm run typecheck      # tsc --noEmit (bez gateway.config.ts, zob. PROWADZACY.md)
+npm run typecheck      # tsc --noEmit
 ```
 
-Plan zapytania zwraca brama w `extensions.queryPlan`, gdy żądanie ma nagłówek `hive-expose-query-plan: true`.
-Każdy subgraf wypisuje w terminalu zapytania, które do niego dotarły.
+Każdy subgraf wypisuje w terminalu zapytania, które do niego dotarły. Planu zapytania brama w tym projekcie nie
+wystawia; plan z kopii z planerem `@graphql-hive/router-runtime` jest w `../POMIARY.md`, sekcja 11.
