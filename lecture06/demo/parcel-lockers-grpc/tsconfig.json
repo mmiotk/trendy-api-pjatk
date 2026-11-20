@@ -1,11 +1,14 @@
+// Node 24 uruchamia pliki .ts, wycinając typy bez sprawdzania.
+// Typy sprawdza tsc z tymi opcjami: npm run -s typecheck.
 {
   "compilerOptions": {
     "target": "esnext",
     "module": "nodenext", // moduły jak w Node.js
-    "noEmit": true, // tsc tylko sprawdza typy
+    "noEmit": true, // tsc nie zapisuje plików .js
     "allowImportingTsExtensions": true, // import "./data.ts"
-    "erasableSyntaxOnly": true, // tylko typy do wycięcia
-    "verbatimModuleSyntax": true, // import type dla typów
+    // Tylko składnia, którą da się wyciąć bez śladu (bez enum TS).
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true, // import type dla samych typów
     "strict": true,
     "skipLibCheck": true,
     "types": ["node"]

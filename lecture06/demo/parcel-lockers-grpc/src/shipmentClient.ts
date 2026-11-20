@@ -3,6 +3,7 @@ import * as grpc from "@grpc/grpc-js";
 import { attempt } from "./errors.ts"; // ta sama funkcja co w client.ts
 import { shipmentsPackage } from "./proto.ts";
 
+// Kształt jak w client.ts: kanał i stub, potem promisify.
 const { ShipmentService } = shipmentsPackage.shipments.v1;
 const credentials = grpc.credentials.createInsecure();
 const client = new ShipmentService("localhost:50062", credentials);

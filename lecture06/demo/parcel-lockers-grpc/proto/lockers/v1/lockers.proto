@@ -1,44 +1,60 @@
+// Kontrakt usługi skrytek, wspólny dla procesów w różnych językach.
+// Pola dopisuje się do komunikatów, a sygnatury metod się nie zmieniają.
 syntax = "proto3"; // bez tej linii: proto2
 
 package lockers.v1; // v1 = wersja kontraktu
 
-// Usługa to zestaw metod wywoływanych zdalnie. GetLocker jest zdalną wersją funkcji getLocker z data.ts.
+// Usługa to zestaw metod wywoływanych zdalnie.
+// GetLocker jest zdalną wersją funkcji getLocker z data.ts.
 service LockerService {
   rpc GetLocker(GetLockerRequest) returns (GetLockerResponse); // unary
+  // Para komunikatów rezerwacji już jest w pliku; deklarację
+  // kończy dopiero średnik, więc może zająć dwie linie.
   rpc ReserveCompartment(ReserveCompartmentRequest)
     returns (ReserveCompartmentResponse); // zmienia stan serwera
 }
 
 message GetLockerRequest {
+  // Argument id funkcji getLocker, pod tą samą nazwą.
   string id = 1; // = 1 to numer pola, nie wartość
 }
 
 message GetLockerResponse {
-  Locker locker = 1; // pole typu komunikat
+  Locker locker = 1; // wynik też opakowany w komunikat
 }
 
+// Paczkomat z listą skrytek. Pola obiektu spoza kontraktu biblioteka
+// pomija bez błędu: bez compartments skrytki nie wyszłyby z serwera.
 message Locker {
-  string id = 1;
+  string id = 1; // numer 1 zostaje bez zmian
   repeated Compartment compartments = 2; // lista, także pusta
 }
 
+// Skrytka i jej rozmiar. Nazwy wartości enuma są te same co w data.ts,
+// więc serwer odsyła rozmiar bez tłumaczenia. Zero to UNSPECIFIED:
+// przy SMALL = 0 skrytka bez rozmiaru wyglądałaby jak mała.
 message Compartment {
   string id = 1;
   CompartmentSize size = 2; // pole typu enum
   bool free = 3; // domyślnie false
 }
 
+// Przedrostek COMPARTMENT_SIZE_ odróżnia wartości różnych enumów w pakiecie.
 enum CompartmentSize {
-  COMPARTMENT_SIZE_UNSPECIFIED = 0; // 0 = wartość domyślna
+  // 0 = wartość domyślna; UNSPECIFIED znaczy „nikt tego nie ustawił”.
+  COMPARTMENT_SIZE_UNSPECIFIED = 0;
   COMPARTMENT_SIZE_SMALL = 1; // wartość enuma, nie numer pola
   COMPARTMENT_SIZE_MEDIUM = 2;
   COMPARTMENT_SIZE_LARGE = 3;
 }
 
+// Rezerwacja skrytki: osobna para żądanie i odpowiedź. Nowy rozmiar
+// w CompartmentSize od razu działa w skrytce i w rezerwacji.
 message ReserveCompartmentRequest {
   string locker_id = 1; // w JavaScripcie: lockerId
+  // UNSPECIFIED też jest poprawną wartością: brak rozmiaru sprawdzi serwer.
   CompartmentSize size = 2; // ten sam enum co w Compartment
-  string postal_code = 3; // format 00-000 sprawdzi serwer
+  string postal_code = 3; // string przyjmie każdy napis: 00-000 sprawdzi serwer
 }
 
 message ReserveCompartmentResponse {

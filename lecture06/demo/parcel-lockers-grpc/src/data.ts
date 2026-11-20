@@ -1,4 +1,8 @@
-// Nazwy jak wartości przyszłego enuma w pliku .proto
+// Typy i dane paczkomatu dla kodu w tym samym procesie. Inny proces
+// ich nie zna: dla niego paczkomat opisuje plik .proto.
+
+// Nazwy jak wartości przyszłego enuma w pliku .proto.
+// Unia napisów, bo erasableSyntaxOnly nie przepuści enum TS.
 export type Size =
   | "COMPARTMENT_SIZE_SMALL"
   | "COMPARTMENT_SIZE_MEDIUM"
@@ -10,6 +14,7 @@ export interface Compartment {
   free: boolean; // false = zajęta
 }
 
+// Paczkomat ma skrytki trzech rozmiarów.
 export interface Locker {
   id: string;
   compartments: Compartment[];
@@ -27,6 +32,9 @@ export const lockers: Locker[] = [
   },
 ];
 
+// Wynik od razu, w tej samej pamięci. Jedyny „błąd” to nieznane id,
+// a typ Locker | undefined każe kodowi wołającemu obsłużyć oba przypadki.
+// Za siecią dochodzą awaria serwera i odpowiedź, która nie nadchodzi.
 export function getLocker(id: string): Locker | undefined {
   return lockers.find((locker) => locker.id === id); // "WAW99": undefined
 }
