@@ -16,7 +16,7 @@ Serwery nie wystawiają reflection, więc `grpcurl` dostaje plik kontraktu przez
 npm ci
 npm run generate        # typy z plików .proto do src/generated/ (katalog w .gitignore)
 npm run typecheck       # tsc --noEmit
-npm run locker          # LockerService na 50061 (restart po zmianie src/ i proto/)
+npm run locker          # LockerService na 50061 (restart po zmianie plików serwera i proto/)
 npm run shipment        # ShipmentService na 50062 (wymaga działającego LockerService na 50061)
 node src/rawCall.ts     # wywołanie bez biblioteki gRPC, przez node:http2
 node src/wire.ts        # bajty jednej skrytki w zapisie szesnastkowym

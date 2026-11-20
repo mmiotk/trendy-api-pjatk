@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "locker": "node --watch --watch-path=src --watch-path=proto src/lockerServer.ts",
+    "locker": "node --watch --watch-path=proto --watch-path=src/lockerServer.ts --watch-path=src/data.ts --watch-path=src/proto.ts src/lockerServer.ts",
     "generate": "proto-loader-gen-types --enums=String --defaults --grpcLib=@grpc/grpc-js --importFileExtension=.ts -I proto --outDir src/generated lockers/v1/lockers.proto shipments/v1/shipments.proto",
-    "shipment": "node --watch --watch-path=src --watch-path=proto src/shipmentServer.ts"
+    "shipment": "node --watch --watch-path=proto --watch-path=src/shipmentServer.ts --watch-path=src/proto.ts src/shipmentServer.ts"
   },
   "type": "module",
   "private": true,
