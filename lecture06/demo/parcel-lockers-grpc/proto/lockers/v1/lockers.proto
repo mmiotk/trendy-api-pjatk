@@ -1,35 +1,38 @@
-syntax = "proto3";
+syntax = "proto3"; // wersja języka Protocol Buffers; bez tej linii kompilator przyjmuje proto2
 
-package lockers.v1;
+package lockers.v1; // przestrzeń nazw; v1 to wersja kontraktu w nazwie pakietu
 
 // Usługa to zestaw metod wywoływanych zdalnie. GetLocker jest zdalną wersją funkcji getLocker z data.ts.
 service LockerService {
-  rpc GetLocker(GetLockerRequest) returns (GetLockerResponse);
-  rpc ReserveCompartment(ReserveCompartmentRequest) returns (ReserveCompartmentResponse);
+  rpc GetLocker(GetLockerRequest) returns (GetLockerResponse); // jedno żądanie i jedna odpowiedź: wywołanie unary
+  rpc ReserveCompartment(ReserveCompartmentRequest) returns (ReserveCompartmentResponse); // komunikaty rezerwacji są już w pliku; ta metoda zmienia stan serwera
 }
 
+// Argument funkcji staje się polem komunikatu żądania.
 message GetLockerRequest {
-  string id = 1;
+  string id = 1; // nazwa jak w data.ts; = 1 to numer pola w formacie binarnym, nie wartość
 }
 
+// Wynik funkcji też jest opakowany w komunikat.
 message GetLockerResponse {
-  Locker locker = 1;
+  Locker locker = 1; // typem pola jest inny komunikat
 }
 
 message Locker {
   string id = 1;
-  repeated Compartment compartments = 2;
+  repeated Compartment compartments = 2; // lista skrytek, także pusta; typem elementu jest komunikat Compartment
 }
 
 message Compartment {
   string id = 1;
-  CompartmentSize size = 2;
-  bool free = 3;
+  CompartmentSize size = 2; // typem pola jest enum zdefiniowany niżej
+  bool free = 3; // pole pojedyncze; false to jego wartość domyślna
 }
 
 // Pierwsza wartość enuma musi mieć numer 0: to wartość domyślna pola.
 enum CompartmentSize {
-  COMPARTMENT_SIZE_UNSPECIFIED = 0;
+  COMPARTMENT_SIZE_UNSPECIFIED = 0; // „rozmiar nieokreślony”: tak odbiorca odczyta pole, którego nikt nie ustawił
+  // Po znaku = stoi wartość enuma, a nie numer pola. Przedrostek z nazwy enuma odróżnia wartości różnych enumów.
   COMPARTMENT_SIZE_SMALL = 1;
   COMPARTMENT_SIZE_MEDIUM = 2;
   COMPARTMENT_SIZE_LARGE = 3;
@@ -37,12 +40,12 @@ enum CompartmentSize {
 
 // Rezerwacja ma własną parę komunikatów; kod pocztowy odbiorcy ma format 00-000.
 message ReserveCompartmentRequest {
-  string locker_id = 1;
-  CompartmentSize size = 2;
-  string postal_code = 3;
+  string locker_id = 1; // proto-loader podaje je w JavaScripcie jako lockerId
+  CompartmentSize size = 2; // ten sam enum co w Compartment
+  string postal_code = 3; // string przyjmie każdy napis: formatu 00-000 kontrakt nie wyraża
 }
 
 message ReserveCompartmentResponse {
-  string compartment_id = 1;
-  string pickup_code = 2;
+  string compartment_id = 1; // na przykład WAW01-1
+  string pickup_code = 2; // kod, którym odbiorca otworzy skrytkę
 }

@@ -3,6 +3,7 @@ syntax = "proto3";
 package shipments.v1;
 
 // Rozmiar skrytki pochodzi z kontraktu usługi skrytek, więc plik go importuje zamiast powielać.
+// Zmiana listy rozmiarów w lockers.proto dociera dzięki temu do obu usług.
 import "lockers/v1/lockers.proto";
 
 service ShipmentService {
@@ -11,11 +12,11 @@ service ShipmentService {
 
 message CreateShipmentRequest {
   string locker_id = 1;
-  lockers.v1.CompartmentSize size = 2;
-  string recipient_postal_code = 3;
+  lockers.v1.CompartmentSize size = 2; // typ z importowanego pliku, zapisany z nazwą jego pakietu
+  string recipient_postal_code = 3; // w kontrakcie skrytek to samo pole nazywa się postal_code
 }
 
 message CreateShipmentResponse {
-  string shipment_id = 1;
-  string pickup_code = 2;
+  string shipment_id = 1; // numer nadaje usługa przesyłek
+  string pickup_code = 2; // kod odbioru przychodzi z odpowiedzi usługi skrytek
 }

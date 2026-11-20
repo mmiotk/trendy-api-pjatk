@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
     "target": "esnext",
-    "module": "nodenext",
-    "noEmit": true,
-    "allowImportingTsExtensions": true,
-    "erasableSyntaxOnly": true,
-    "verbatimModuleSyntax": true,
+    "module": "nodenext", // moduły rozwiązywane tak jak w Node.js ("type": "module" z package.json)
+    "noEmit": true, // tsc tylko sprawdza typy; plików .js nie zapisuje, bo kod uruchamia Node.js
+    "allowImportingTsExtensions": true, // import "./data.ts" z rozszerzeniem, którego wymaga Node.js
+    "erasableSyntaxOnly": true, // tylko składnia, którą da się po prostu wyciąć (bez enum TypeScriptu)
+    "verbatimModuleSyntax": true, // import samego typu trzeba oznaczyć jako import type
     "strict": true,
-    "skipLibCheck": true,
-    "types": ["node"]
+    "skipLibCheck": true, // bez sprawdzania plików .d.ts z bibliotek
+    "types": ["node"] // typy z @types/node, np. moduł node:http2
   },
   "include": ["src"]
 }

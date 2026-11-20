@@ -2,9 +2,9 @@
 export type Size = "COMPARTMENT_SIZE_SMALL" | "COMPARTMENT_SIZE_MEDIUM" | "COMPARTMENT_SIZE_LARGE";
 
 export interface Compartment {
-  id: string;
+  id: string; // identyfikator paczkomatu z numerem skrytki
   size: Size;
-  free: boolean;
+  free: boolean; // true: wolna, false: zajęta
 }
 
 export interface Locker {
@@ -26,5 +26,5 @@ export const lockers: Locker[] = [
 
 // Zwykła funkcja w tym samym procesie: nieznany identyfikator daje undefined.
 export function getLocker(id: string): Locker | undefined {
-  return lockers.find((locker) => locker.id === id);
+  return lockers.find((locker) => locker.id === id); // dla "WAW99" find nie znajduje elementu i daje undefined
 }
