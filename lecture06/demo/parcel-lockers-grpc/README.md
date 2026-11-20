@@ -19,7 +19,7 @@ npm run typecheck       # tsc --noEmit
 npm run locker          # LockerService na 50061 (restart po zmianie src/ i proto/)
 npm run shipment        # ShipmentService na 50062 (wymaga działającego LockerService na 50061)
 node src/rawCall.ts     # wywołanie bez biblioteki gRPC, przez node:http2
-node src/wire.ts        # bajty jednej skrytki rozpisane na tagi i wartości
+node src/wire.ts        # bajty jednej skrytki w zapisie szesnastkowym
 node src/client.ts      # klient usługi skrytek, błędy z kodami statusu
 node src/shipmentClient.ts
 grpcurl -plaintext -import-path proto -proto lockers/v1/lockers.proto \
@@ -35,7 +35,7 @@ grpcurl -plaintext -import-path proto -proto lockers/v1/lockers.proto \
 | `src/data.ts` | paczkomat i skrytki w pamięci; funkcja `getLocker` |
 | `src/proto.ts` | ładowanie plików `.proto` (`loadSync`) i typy wygenerowane przez `proto-loader-gen-types` |
 | `src/rawCall.ts` | jedno wywołanie gRPC bez biblioteki gRPC: `node:http2`, prefiks ramki, nagłówki końcowe |
-| `src/wire.ts` | skrytka zakodowana `serialize` i czytnik rekordów: tag, typ przewodowy, długość, wartość |
+| `src/wire.ts` | skrytka zakodowana `serialize` i wypisana szesnastkowo |
 | `src/lockerServer.ts` | serwer `LockerService`: handlery i kody statusu |
 | `src/errors.ts` | `INVALID_ARGUMENT` z `google.rpc.BadRequest` (serwer) i `attempt`, które wypisuje wynik albo kod, komunikat i naruszenia (klient) |
 | `src/client.ts` | kanał i stub klienta `LockerService`; wywołania udane i odrzucone |

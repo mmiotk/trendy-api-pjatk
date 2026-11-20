@@ -1,10 +1,13 @@
-// Rozmiary mają nazwy wartości z przyszłego enuma w pliku .proto, więc serwer odeśle je bez mapowania.
-export type Size = "COMPARTMENT_SIZE_SMALL" | "COMPARTMENT_SIZE_MEDIUM" | "COMPARTMENT_SIZE_LARGE";
+// Nazwy jak wartości przyszłego enuma w pliku .proto
+export type Size =
+  | "COMPARTMENT_SIZE_SMALL"
+  | "COMPARTMENT_SIZE_MEDIUM"
+  | "COMPARTMENT_SIZE_LARGE";
 
 export interface Compartment {
-  id: string; // identyfikator paczkomatu z numerem skrytki
+  id: string; // np. WAW01-1
   size: Size;
-  free: boolean; // true: wolna, false: zajęta
+  free: boolean; // false = zajęta
 }
 
 export interface Locker {
@@ -12,7 +15,7 @@ export interface Locker {
   compartments: Compartment[];
 }
 
-// Dane w pamięci procesu: jeden paczkomat z trzema skrytkami, duża jest zajęta.
+// Dane w pamięci procesu: restart przywraca ten stan.
 export const lockers: Locker[] = [
   {
     id: "WAW01",
@@ -24,7 +27,6 @@ export const lockers: Locker[] = [
   },
 ];
 
-// Zwykła funkcja w tym samym procesie: nieznany identyfikator daje undefined.
 export function getLocker(id: string): Locker | undefined {
-  return lockers.find((locker) => locker.id === id); // dla "WAW99" find nie znajduje elementu i daje undefined
+  return lockers.find((locker) => locker.id === id); // "WAW99": undefined
 }
